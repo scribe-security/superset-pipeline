@@ -2,9 +2,9 @@ name: Build & publish docker bad example
 
 on:
   workflow_dispatch:
-  schedule:
+  # schedule:
   # Run at 5 AM UTC every day
-  - cron: '15 3 * * *'
+  # - cron: '15 3 * * *'
     
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
