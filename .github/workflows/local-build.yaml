@@ -63,7 +63,7 @@ jobs:
            }
            git fetch --tags
            tags=($(git tag))            
-           start_date="2024-09-22 00:00"
+           start_date="2024-10-08 00:00"
             
            # Current date
            # end_date=$(date +"%Y-%m-%d %H:%M") # 20 minutes test mode
