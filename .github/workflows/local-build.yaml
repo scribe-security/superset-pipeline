@@ -214,3 +214,27 @@ jobs:
            scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
            format: attest
            config: scribe-training-vue-project/.valint.yaml
+      - name: verify slsa2
+        id: slsa_ver2
+        uses: scribe-security/action-verify@master
+        with:
+           target: ${{ env.TARGET }}:${{env.MY_TAG}}
+           scribe-enable: true
+           product-key:  ${{ env.APP_NAME }}
+           product-version: ${{env.PRODUCT_VERSION}} #${{env.GITHUB_RUN_NUM}}
+           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
+           format: attest
+           rule: slsa/l2-provenance-authenticated@v1
+           verbose: 2
+      - name: verify slsa1
+        id: slsa_ver1
+        uses: scribe-security/action-verify@master
+        with:
+           target: ${{ env.TARGET }}:${{env.MY_TAG}}
+           scribe-enable: true
+           product-key:  ${{ env.APP_NAME }}
+           product-version: ${{env.PRODUCT_VERSION}} #${{env.GITHUB_RUN_NUM}}
+           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
+           format: attest
+           rule: slsa/l1-provenance-exists@v1
+           verbose: 2
