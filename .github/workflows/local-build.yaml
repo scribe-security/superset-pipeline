@@ -250,11 +250,11 @@ jobs:
           platform: github
           args:
            --repository.mapping scribe-security/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
-           --token=${{ secrets.REPO_TOKEN }}
+           --token ${{ secrets.REPO_TOKEN }}
            --url=https://api.github.com 
-           --scope.organization=${{ env.ORG_NAME }} 
+           --scope.organization ${{ env.ORG_NAME }} 
            --commit.skip 
-           --scope.branch=main 
+           --scope.branch main 
            --workflow.skip
            --organization.mapping=scribe-security::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
       - name: Verify Github
