@@ -250,7 +250,7 @@ jobs:
           platform: github
           args:
            --repository.mapping scribe-security/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
-           --token ${{ secrets.REPO_TOKEN }}
+           --token ${{ secrets.GH_TOKEN }}
            --url=https://api.github.com 
            --scope.organization ${{ env.ORG_NAME }} 
            --commit.skip 
@@ -264,6 +264,7 @@ jobs:
           platform: github
           valint_args: --valint.bundle-branch main
           args: >-
+            --token ${{ secrets.GH_TOKEN }}
             --organization.mapping scribe-security::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
             --repository.mapping scribe-security/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
             --organization.policy ssdf-org@discovery
