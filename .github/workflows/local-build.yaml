@@ -253,3 +253,16 @@ jobs:
            --scope.branch=main 
            --workflow.skip
            --organization.mapping=scribe-security::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
+      - name: Verify Github
+        uses: scribe-security/action-platforms@master
+        with:
+          command: verify
+          platform: github
+          valint_args: --valint.bundle-branch main
+          args: >-
+            --organization.mapping scribe-security::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
+            --repository.mapping scribe-security/superset-pipeline
+            --organization.policy ssdf-org@discovery
+            --org-policy-skip-aggregate
+            --repository.policy ssdf-repo@discovery
+            --repo-policy-skip-aggregate
