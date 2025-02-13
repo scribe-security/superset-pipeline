@@ -246,7 +246,7 @@ jobs:
           platform: github
           args:
            --repository.mapping scribe-security/superset-pipeline
-           --token=${{ env.GITHUB_TOKEN }}
+           --token=${{ secrets.REPO_TOKEN }}
            --url=https://api.github.com 
            --scope.organization=${{ env.ORG_NAME }} 
            --commit.skip 
