@@ -1,5 +1,5 @@
 name: Build & publish docker for Scribe
-
+  
 on:
   workflow_dispatch:
   schedule:
@@ -15,6 +15,10 @@ concurrency:
 env:
   APP_NAME: Superset-z
   TARGET: apache/superset
+  LOG_LEVEL: DEBUG
+  db.local.store_policy: replace
+  valint.scribe.client-secret: ${{ secrets.SCRIBE_TOKEN }}
+
   
   
 
