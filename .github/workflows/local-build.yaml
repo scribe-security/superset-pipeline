@@ -238,3 +238,18 @@ jobs:
            format: attest
            rule: slsa/l1-provenance-exists@v1
            verbose: 2
+
+      - name: GitHub Discover
+        uses: scribe-security/action-platforms@master
+        with:
+          command: discover
+          platform: github
+          args:
+           --repository.mapping scribe-security/superset-pipeline
+           --token=${{ env.GITHUB_TOKEN }}
+           --url=https://api.github.com 
+           --scope.organization=${{ env.ORG_NAME }} 
+           --commit.skip 
+           --scope.branch=main 
+           --workflow.skip
+           --organization.mapping=scribe-security::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
