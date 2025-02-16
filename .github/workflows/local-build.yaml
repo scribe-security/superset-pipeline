@@ -237,9 +237,9 @@ jobs:
         with:
           command: discover
           platform: github
-          valint_args: >-
+          valint_args:
             --valint.scribe.client-secret ${{ secrets.SCRIBE_TOKEN }}
-          args: >-
+          args:
             --token ${{ secrets.GH_TOKEN }}
             --url https://api.github.com
             --scope.organization ${{ env.ORG_NAME }}
@@ -254,9 +254,9 @@ jobs:
         with:
           command: verify
           platform: github
-          valint_args: >-
+          valint_args:
             --valint.scribe.client-secret ${{ secrets.SCRIBE_TOKEN }}
-          args: >-
+          args:
             --organization.mapping ${{ env.ORG_NAME }}::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
             --repository.mapping scribe-security/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
             --organization.policy ssdf-org@discovery
