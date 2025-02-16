@@ -1,14 +1,14 @@
 name: Build & publish docker for Scribe
-  
+
 on:
   workflow_dispatch:
   schedule:
-  # Run at 5 AM UTC every day
+    # Run at 5 AM UTC every day
 
-  - cron: '15 3 * * *'
-  
+    - cron: "15 3 * * *"
+
   # - cron: '5/20 * * * *' # 20 minutes test mode
-    
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
@@ -19,9 +19,6 @@ env:
   PLATFORMS_DB_STORE_POLICY: replace
   SCRIBE_CLIENT_SECRET: ${{ secrets.SCRIBE_TOKEN }}
   ORG_NAME: scribe-security
-
-  
-  
 
 jobs:
   setup_matrix:
@@ -40,8 +37,8 @@ jobs:
     needs: setup_matrix
     runs-on: ubuntu-22.04
     permissions:
-        contents: read
-        id-token: write
+      contents: read
+      id-token: write
     strategy:
       matrix:
         build_preset: ${{fromJson(needs.setup_matrix.outputs.matrix_config)}}
@@ -55,84 +52,78 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
-          # fetch-depth: 0      
+          # fetch-depth: 0
 
       - name: Fetch all tags
         run: |
-           # Function to calculate the number of days between two dates
-           days_between() {
-                local start_date="$1"
-                local end_date="$2"
-                local diff=$(( ( $(date -d "$end_date" +%s) - $(date -d "$start_date" +%s) ) / 86400 )) #1200 For 20 mintues test
-                echo "$diff"
-           }
-           git fetch --tags
-           tags=($(git tag))            
-           start_date="2025-02-12 00:00"
-            
-           # Current date
-           # end_date=$(date +"%Y-%m-%d %H:%M") # 20 minutes test mode
-           end_date=$(date +"%Y-%m-%d")   #whole days
+          # Function to calculate the number of days between two dates
+          days_between() {
+               local start_date="$1"
+               local end_date="$2"
+               local diff=$(( ( $(date -d "$end_date" +%s) - $(date -d "$start_date" +%s) ) / 86400 )) #1200 For 20 mintues test
+               echo "$diff"
+          }
+          git fetch --tags
+          tags=($(git tag))            
+          start_date="2025-02-12 00:00"
            
-           # Calculate days between
-           days_passed=$(days_between "$start_date" "$end_date")
-            
-           # Output the result
-           echo "Number of days passed since $start_date: $days_passed"
-           daily_version=$((days_passed+232))  #210
-           echo "Daily Version: $daily_version"
-           #-------------------------           
-           echo ${tags[$daily_version]}
-           echo "PRODUCT_VERSION=${tags[$daily_version]}">>$GITHUB_ENV
-                      
-     # - name: Check for file changes
-     #   id: check
-     #   uses: ./.github/actions/change-detector/
-     #   with:
-     #     token: ${{ secrets.GITHUB_TOKEN }}
-     #   run: >-
-     #     echo "::set-output name=python::$(true)"
+          # Current date
+          # end_date=$(date +"%Y-%m-%d %H:%M") # 20 minutes test mode
+          end_date=$(date +"%Y-%m-%d")   #whole days
 
+          # Calculate days between
+          days_passed=$(days_between "$start_date" "$end_date")
+           
+          # Output the result
+          echo "Number of days passed since $start_date: $days_passed"
+          daily_version=$((days_passed+232))  #210
+          echo "Daily Version: $daily_version"
+          #-------------------------           
+          echo ${tags[$daily_version]}
+          echo "PRODUCT_VERSION=${tags[$daily_version]}">>$GITHUB_ENV
+
+      # - name: Check for file changes
+      #   id: check
+      #   uses: ./.github/actions/change-detector/
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #   run: >-
+      #     echo "::set-output name=python::$(true)"
 
       - name: Setup supersetbot
-        
+
         # if: steps.check.outputs.python || steps.check.outputs.frontend || steps.check.outputs.docker
         uses: ./.github/actions/setup-supersetbot/
 
-          
       - name: "Checkout a single tag"
         uses: actions/checkout@v4
         with:
           persist-credentials: false
           ref: ${{ env.PRODUCT_VERSION }}
-          # fetch-depth: 0  
-                
+          # fetch-depth: 0
+
       - name: Checkout external repository
         uses: actions/checkout@v4
         with:
-           repository: scribe-security/scribe-training-vue-project
-           ref: main
-           path: scribe-training-vue-project
-           token: ${{ secrets.REPO_TOKEN }}
+          repository: scribe-security/scribe-training-vue-project
+          ref: main
+          path: scribe-training-vue-project
+          token: ${{ secrets.REPO_TOKEN }}
 
-       
-      
       - name: Generate signed SBOM for repo content clone
         uses: scribe-security/action-bom@master
-        
-        with:
-            target: 'git:.'
-            scribe-enable: true
-            product-key: ${{ env.APP_NAME }}
-            product-version: ${{env.PRODUCT_VERSION}} #${{env.GITHUB_RUN_NUM}}
-            
-            scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-            components: commits,packages,files,dep
-            format: attest
-            config: scribe-training-vue-project/.valint.yaml
-            verbose: 2
 
-           
+        with:
+          target: "git:."
+          scribe-enable: true
+          product-key: ${{ env.APP_NAME }}
+          product-version: ${{env.PRODUCT_VERSION}} #${{env.GITHUB_RUN_NUM}}
+
+          scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
+          components: commits,packages,files,dep
+          format: attest
+          config: scribe-training-vue-project/.valint.yaml
+          verbose: 2
 
       - name: Set up QEMU
         #if: steps.check.outputs.python || steps.check.outputs.frontend || steps.check.outputs.docker
@@ -150,14 +141,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      
-
       - name: Build Docker Image
         # if: steps.check.outputs.python || steps.check.outputs.frontend || steps.check.outputs.docker
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
 
         run: |
           # Single platform builds in pull_request context to speed things up
@@ -172,19 +160,19 @@ jobs:
             --context "$EVENT" \
             --context-ref "$RELEASE" $FORCE_LATEST \
             --platform linux/arm64
-          
+
           SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
           echo -------------
           TAG=$(echo $SHORT_SHA-${{ matrix.build_preset }}-arm)
           echo $TAG
           echo -------------
-          
+
           input_string=$(docker images|grep -m 1 ${{ env.TARGET }}||true)
           echo $input_string
-          
+
           # Split the string into an array by spaces
           IFS=' ' read -r -a array <<< "$input_string"
-          
+
           # Filter out empty elements
           filtered_array=()
           for element in "${array[@]}"; do
@@ -195,78 +183,76 @@ jobs:
                               
           # Extract the middle element
           tag_element=${filtered_array[1]}
-          
+
           # Print the middle element
           echo "Middle column: $tag_element"
           echo "MY_TAG=$tag_element">>$GITHUB_ENV
-      - name: Generate signed SBOM for docker image  
-        uses: scribe-security/action-bom@master            
+      - name: Generate signed SBOM for docker image
+        uses: scribe-security/action-bom@master
         with:
-           target: ${{ env.TARGET }}:${{env.MY_TAG}}
-           scribe-enable: true
-           product-key:  ${{ env.APP_NAME }}
-           product-version: ${{env.PRODUCT_VERSION}} #${{env.GITHUB_RUN_NUM}}
-           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-           format: attest
-           config: scribe-training-vue-project/.valint.yaml
+          target: ${{ env.TARGET }}:${{env.MY_TAG}}
+          scribe-enable: true
+          product-key: ${{ env.APP_NAME }}
+          product-version: ${{env.PRODUCT_VERSION}} #${{env.GITHUB_RUN_NUM}}
+          scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
+          format: attest
+          config: scribe-training-vue-project/.valint.yaml
       - name: Generate signed SLSA Provenance record for docker image
         uses: scribe-security/action-slsa@master
         with:
-           target: ${{ env.TARGET }}:${{env.MY_TAG}}
-           scribe-enable: true
-           product-key:  ${{ env.APP_NAME }}
-           product-version: ${{env.PRODUCT_VERSION}} #${{env.GITHUB_RUN_NUM}}
-           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-           format: attest
-           config: scribe-training-vue-project/.valint.yaml
+          target: ${{ env.TARGET }}:${{env.MY_TAG}}
+          scribe-enable: true
+          product-key: ${{ env.APP_NAME }}
+          product-version: ${{env.PRODUCT_VERSION}} #${{env.GITHUB_RUN_NUM}}
+          scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
+          format: attest
+          config: scribe-training-vue-project/.valint.yaml
       - name: verify slsa2
         id: slsa_ver2
         uses: scribe-security/action-verify@master
         with:
-           target: ${{ env.TARGET }}:${{env.MY_TAG}}
-           scribe-enable: true
-           product-key:  ${{ env.APP_NAME }}
-           product-version: ${{env.PRODUCT_VERSION}} #${{env.GITHUB_RUN_NUM}}
-           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-           format: attest
-           rule: slsa/l2-provenance-authenticated@v1
-           verbose: 2
+          target: ${{ env.TARGET }}:${{env.MY_TAG}}
+          scribe-enable: true
+          product-key: ${{ env.APP_NAME }}
+          product-version: ${{env.PRODUCT_VERSION}} #${{env.GITHUB_RUN_NUM}}
+          scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
+          format: attest
+          rule: slsa/l2-provenance-authenticated@v1
+          verbose: 2
       - name: verify slsa1
         id: slsa_ver1
         uses: scribe-security/action-verify@master
         with:
-           target: ${{ env.TARGET }}:${{env.MY_TAG}}
-           scribe-enable: true
-           product-key:  ${{ env.APP_NAME }}
-           product-version: ${{env.PRODUCT_VERSION}} #${{env.GITHUB_RUN_NUM}}
-           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-           format: attest
-           rule: slsa/l1-provenance-exists@v1
-           verbose: 2
+          target: ${{ env.TARGET }}:${{env.MY_TAG}}
+          scribe-enable: true
+          product-key: ${{ env.APP_NAME }}
+          product-version: ${{env.PRODUCT_VERSION}} #${{env.GITHUB_RUN_NUM}}
+          scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
+          format: attest
+          rule: slsa/l1-provenance-exists@v1
+          verbose: 2
 
       - name: GitHub Discover
         uses: scribe-security/action-platforms@master
         with:
           command: discover
           platform: github
-          args:
-           --repository.mapping scribe-security/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
-           --token ${{ secrets.GH_TOKEN }}
-           --url https://api.github.com 
-           --scope.organization ${{ env.ORG_NAME }} 
-           --commit.skip 
-           --scope.branch main 
-           --workflow.skip
-           --organization.mapping ${{ env.ORG_NAME }}::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
+          args: >-
+            --token ${{ secrets.GH_TOKEN }}
+            --url https://api.github.com
+            --scope.organization ${{ env.ORG_NAME }}
+            --commit.skip
+            --scope.branch main
+            --workflow.skip
+            --organization.mapping ${{ env.ORG_NAME }}::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
+            --repository.mapping scribe-security/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
+
       - name: Verify Github
         uses: scribe-security/action-platforms@master
         with:
           command: verify
           platform: github
-          valint_args:
-            --valint.bundle-branch main
-          args: 
-            --token ${{ secrets.GH_TOKEN }}
+          args: >-
             --organization.mapping ${{ env.ORG_NAME }}::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
             --repository.mapping scribe-security/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
             --organization.policy ssdf-org@discovery
