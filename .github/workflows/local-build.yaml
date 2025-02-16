@@ -18,6 +18,7 @@ env:
   LOG_LEVEL: DEBUG
   db.local.store_policy: replace
   valint.scribe.client-secret: ${{ secrets.SCRIBE_TOKEN }}
+  ORG_NAME: scribe-security
 
   
   
@@ -256,7 +257,7 @@ jobs:
            --commit.skip 
            --scope.branch main 
            --workflow.skip
-           --organization.mapping=scribe-security::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
+           --organization.mapping ${{ env.ORG_NAME }}::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
       - name: Verify Github
         uses: scribe-security/action-platforms@master
         with:
