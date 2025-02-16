@@ -18,6 +18,7 @@ env:
   LOG_LEVEL: DEBUG
   PLATFORMS_DB_STORE_POLICY: replace
   SCRIBE_CLIENT_SECRET: ${{ secrets.SCRIBE_TOKEN }}
+  SCRIBE_TOKEN: ${{ secrets.SCRIBE_TOKEN }}
   ORG_NAME: scribe-security
 
 jobs:
@@ -237,28 +238,23 @@ jobs:
         with:
           command: discover
           platform: github
-          valint_args:
-            --valint.scribe.client-secret ${{ secrets.SCRIBE_TOKEN }}
-          args:
+          args: >-
             --token ${{ secrets.GH_TOKEN }}
-            --url https://api.github.com
             --scope.organization ${{ env.ORG_NAME }}
             --commit.skip
             --scope.branch main
             --workflow.skip
             --organization.mapping ${{ env.ORG_NAME }}::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
-            --repository.mapping scribe-security/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
+            --repository.mapping ${{ env.ORG_NAME }}/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
 
       - name: Verify Github
         uses: scribe-security/action-platforms@master
         with:
           command: verify
           platform: github
-          valint_args:
-            --valint.scribe.client-secret ${{ secrets.SCRIBE_TOKEN }}
-          args:
+          args: >-
             --organization.mapping ${{ env.ORG_NAME }}::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
-            --repository.mapping scribe-security/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
+            --repository.mapping ${{ env.ORG_NAME }}/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
             --organization.policy ssdf-org@discovery
             --org-policy-skip-aggregate
             --repository.policy ssdf-repo@discovery
