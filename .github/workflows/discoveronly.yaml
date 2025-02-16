@@ -2,7 +2,7 @@ name: aaaa discover only
   
 on:
   workflow_dispatch:
-  schedule:
+ 
 
     
 concurrency:
