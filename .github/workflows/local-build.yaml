@@ -264,7 +264,6 @@ jobs:
           command: verify
           platform: github
           valint_args:
-            --valint.scribe.client-secret ${{ secrets.SCRIBE_TOKEN }}
             --valint.bundle-branch main
           args: 
             --token ${{ secrets.GH_TOKEN }}
