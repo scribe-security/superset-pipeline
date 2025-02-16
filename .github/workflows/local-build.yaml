@@ -263,8 +263,9 @@ jobs:
         with:
           command: verify
           platform: github
-          valint_args: 
-            --valint.bundle-branch main --valint.scribe.client-secret ${{ secrets.SCRIBE_TOKEN }}
+          valint_args:
+            --valint.scribe.client-secret ${{ secrets.SCRIBE_TOKEN }}
+            --valint.bundle-branch main
           args: 
             --token ${{ secrets.GH_TOKEN }}
             --organization.mapping ${{ env.ORG_NAME }}::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
