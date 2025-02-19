@@ -250,7 +250,7 @@ jobs:
 
       - name: Verify Github
         env: 
-           VALINT_BUNDLE: https://github.com/scribe-security/scribe-training-vue-project.git 
+           VALINT_BUNDLE: https://github.com/scribe-security/scribe-training-vue-project
            VALINT_BUNDLE_AUTH: ${{secrets.REPO_TOKEN}}
         uses: scribe-security/action-platforms@master
         with:
