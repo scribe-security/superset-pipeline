@@ -251,9 +251,9 @@ jobs:
       - name: Verify Github
         uses: scribe-security/action-platforms@master
         with:
-          command: verify --valint.bundle https://github.com/scribe-security/scribe-training-vue-project --valint.bundle-auth ${{secrets.REPO_TOKEN}}
+          command: verify 
           platform: github
-          valint_args: --a
+          valint_args: --valint.bundle https://github.com/scribe-security/scribe-training-vue-project --valint.bundle-auth ${{secrets.REPO_TOKEN}}
           args: >-
             --organization.mapping ${{ env.ORG_NAME }}::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
             --repository.mapping ${{ env.ORG_NAME }}/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
