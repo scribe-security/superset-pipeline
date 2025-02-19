@@ -259,5 +259,5 @@ jobs:
             --repository.mapping ${{ env.ORG_NAME }}/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
             --organization.policy ssdf/slsa-org-base@v1
             --org-policy-skip-aggregate
-            --repository.policy ssdf-repo@discovery
-            --repo-policy-skip-aggregate
+           # --repository.policy ssdf-repo@discovery
+           # --repo-policy-skip-aggregate
