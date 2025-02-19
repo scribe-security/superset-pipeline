@@ -249,13 +249,11 @@ jobs:
             --repository.mapping ${{ env.ORG_NAME }}/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
 
       - name: Verify Github
-        env: 
-           VALINT_BUNDLE: "https://github.com/scribe-security/scribe-training-vue-project"
-           VALINT_BUNDLE_AUTH: ${{secrets.REPO_TOKEN}}
         uses: scribe-security/action-platforms@master
         with:
-          command: verify
+          command: verify --valint.bundle https://github.com/scribe-security/scribe-training-vue-project --valint.bundle-auth ${{secrets.REPO_TOKEN}}
           platform: github
+          valint_args: --a
           args: >-
             --organization.mapping ${{ env.ORG_NAME }}::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
             --repository.mapping ${{ env.ORG_NAME }}/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
