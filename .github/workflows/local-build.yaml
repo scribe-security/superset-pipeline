@@ -255,7 +255,7 @@ jobs:
           args: >-
             --organization.mapping ${{ env.ORG_NAME }}::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
             --repository.mapping ${{ env.ORG_NAME }}/superset-pipeline::${{ env.APP_NAME }}::${{env.PRODUCT_VERSION}}
-            --organization.policy.bundle https://github.com/scribe-security/scribe-training-vue-project.git
+            --bundle https://github.com/scribe-security/scribe-training-vue-project.git
             --organization.policy scribe-training-vue-project/slsa-org-base.yaml
             --org-policy-skip-aggregate
             --repository.policy ssdf-repo@discovery
